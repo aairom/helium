@@ -315,7 +315,7 @@ class APIImpl:
 			driver.last_manipulated_element = gui_or_web_elt
 	@handle_unexpected_alert
 	def drag_file_impl(self, file_path, to):
-		to, _ = self._unwrap_clickable_element(to)
+		unwrapped, _ = self._unwrap_clickable_element(to)
 		drag_and_drop = DragAndDropFile(self.require_driver(), file_path)
 		drag_and_drop.begin()
 		try:
@@ -323,7 +323,12 @@ class APIImpl:
 			# event when user has dragged the file over the document. We
 			# therefore simulate this dragging over the document first:
 			drag_and_drop.drag_over_document()
-			self._manipulate(to, lambda elt: drag_and_drop.drop_on(elt))
+			try:
+				self._manipulate(
+					unwrapped, lambda elt: drag_and_drop.drop_on(elt)
+				)
+			except LookupError:
+				raise LookupError(repr(to)) from None
 		finally:
 			drag_and_drop.end()
 	@might_spawn_window
@@ -331,13 +336,17 @@ class APIImpl:
 	def attach_file_impl(self, file_path, to=None):
 		from helium import Point
 		driver = self.require_driver()
-		if to is None:
-			to = FileInput(driver)
-		elif isinstance(to, str):
-			to = FileInput(driver, to)
-		elif isinstance(to, Point):
-			to, _ = self._point_to_element_and_offset(to)
-		self._manipulate(to, lambda elt: elt.send_keys(file_path))
+		unwrapped = to
+		if unwrapped is None:
+			unwrapped = FileInput(driver)
+		elif isinstance(unwrapped, str):
+			unwrapped = FileInput(driver, unwrapped)
+		elif isinstance(unwrapped, Point):
+			unwrapped, _ = self._point_to_element_and_offset(unwrapped)
+		try:
+			self._manipulate(unwrapped, lambda elt: elt.send_keys(file_path))
+		except LookupError:
+			raise LookupError(repr(to)) from None
 	def refresh_impl(self):
 		self._handle_alerts(
 			self._refresh_no_alert, self._refresh_with_alert

@@ -1,4 +1,5 @@
-from helium import attach_file, drag_file, TextField, Text
+from helium import attach_file, drag_file, TextField, Text, Config
+from helium._impl.util.lang import TemporaryAttrValue
 from tests.api import BrowserAT
 from tests.api.util import get_data_file
 
@@ -24,6 +25,16 @@ class FileUploadTest(BrowserAT):
 			to=Text('Normal file upload').top_left + (200, 10)
 		)
 		self.assertEqual('Success!', self.read_result_from_browser())
+	def test_attach_file_non_existent_str_error_message(self):
+		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
+			with self.assertRaises(LookupError) as cm:
+				attach_file(self.file_to_upload, to='Non-existent')
+			self.assertEqual("'Non-existent'", str(cm.exception))
+	def test_drag_file_non_existent_str_error_message(self):
+		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
+			with self.assertRaises(LookupError) as cm:
+				drag_file(self.file_to_upload, to='Non-existent')
+			self.assertEqual("'Non-existent'", str(cm.exception))
 	def test_drag_file_to_appearing_drop_area(self):
 		drag_file(self.file_to_upload, to='Drop the file here!')
 		self.assertEqual('Success!', self.read_result_from_browser())
