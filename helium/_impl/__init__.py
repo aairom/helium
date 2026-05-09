@@ -289,15 +289,20 @@ class APIImpl:
 	@handle_unexpected_alert
 	def select_impl(self, combo_box, value):
 		from helium import ComboBox
-		if isinstance(combo_box, str):
-			combo_box = ComboBoxImpl(self.require_driver(), combo_box)
-		elif isinstance(combo_box, ComboBox):
-			combo_box = combo_box._impl
+		unwrapped = combo_box
+		if isinstance(unwrapped, str):
+			unwrapped = ComboBoxImpl(self.require_driver(), unwrapped)
+		elif isinstance(unwrapped, ComboBox):
+			unwrapped = unwrapped._impl
 		def _select(web_element):
 			if isinstance(web_element, WebElementWrapper):
 				web_element = web_element.unwrap()
 			Select(web_element).select_by_visible_text(value)
-		self._manipulate(combo_box, _select)
+		try:
+			self._manipulate(unwrapped, _select)
+		except LookupError:
+			# Show a more helpful error message:
+			raise LookupError(repr(combo_box)) from None
 	def _manipulate(self, gui_or_web_elt, action):
 		driver = self.require_driver()
 		if hasattr(gui_or_web_elt, 'perform') \
