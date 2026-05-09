@@ -16,6 +16,16 @@ class HighlightTest(BrowserAT):
 		with TemporaryAttrValue(Config, 'implicit_wait_secs', .5):
 			with self.assertRaises(LookupError):
 				highlight(Button("foo"))
+	def test_highlight_non_existent_str_error_message(self):
+		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
+			with self.assertRaises(LookupError) as cm:
+				highlight("Non-existent")
+			self.assertEqual("'Non-existent'", str(cm.exception))
+	def test_highlight_non_existent_button_error_message(self):
+		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
+			with self.assertRaises(LookupError) as cm:
+				highlight(Button("Non-existent"))
+			self.assertEqual("Button('Non-existent')", str(cm.exception))
 	def _check_is_highlighted(self, html_element):
 		style = html_element.web_element.get_attribute("style")
 		self.assertTrue("border: 2px solid red;" in style, style)

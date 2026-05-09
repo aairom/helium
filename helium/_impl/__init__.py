@@ -392,21 +392,24 @@ class APIImpl:
 	def highlight_impl(self, element):
 		driver = self.require_driver()
 		from helium import HTMLElement, Text
-		if isinstance(element, str):
-			element = Text(element)
-		if isinstance(element, HTMLElement):
-			element = element._impl
+		unwrapped = element
+		if isinstance(unwrapped, str):
+			unwrapped = Text(unwrapped)
+		if isinstance(unwrapped, HTMLElement):
+			unwrapped = unwrapped._impl
 		try:
-			element = element.first_occurrence
+			unwrapped = unwrapped.first_occurrence
+		except LookupError:
+			raise LookupError(repr(element)) from None
 		except AttributeError:
 			pass
-		previous_style = element.get_attribute("style")
-		if isinstance(element, WebElementWrapper):
-			element = element.unwrap()
+		previous_style = unwrapped.get_attribute("style")
+		if isinstance(unwrapped, WebElementWrapper):
+			unwrapped = unwrapped.unwrap()
 		driver.execute_script(
 			"arguments[0].setAttribute("
 				"'style', 'border: 2px solid red; font-weight: bold;'"
-			");", element
+			");", unwrapped
 		)
 		driver.execute_script(
 			"var target = arguments[0];"
@@ -415,7 +418,7 @@ class APIImpl:
 				"function() {"
 					"target.setAttribute('style', previousStyle);"
 				"}, 2000"
-			");", element, previous_style
+			");", unwrapped, previous_style
 		)
 	def require_driver(self):
 		if not self.driver:
