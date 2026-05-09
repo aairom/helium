@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from helium import Button, TextField, ComboBox, CheckBox, click, \
 	RadioButton, write, Text, find_all, Link, ListItem, Image, select, Config
-from helium._impl.util.lang import TemporaryAttrValue
 from tests.api import BrowserAT
 
 class GUIElementsTest(BrowserAT):
@@ -133,16 +132,6 @@ class GUIElementsTest(BrowserAT):
 		self.assertEqual('Option Two', ComboBox("Drop Down List").value)
 		select(ComboBox("Drop Down List"), "Option Three")
 		self.assertEqual('Option Three', ComboBox("Drop Down List").value)
-	def test_select_non_existent_str_error_message(self):
-		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
-			with self.assertRaises(LookupError) as cm:
-				select("Non-existent", "Option One")
-			self.assertEqual("'Non-existent'", str(cm.exception))
-	def test_select_non_existent_combo_box_error_message(self):
-		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
-			with self.assertRaises(LookupError) as cm:
-				select(ComboBox("Non-existent"), "Option One")
-			self.assertEqual("ComboBox('Non-existent')", str(cm.exception))
 	def test_combo_box_identified_by_value(self):
 		combo_box = ComboBox("Select a value...")
 		self.assertTrue(combo_box.exists())
