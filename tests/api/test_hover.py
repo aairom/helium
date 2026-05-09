@@ -1,4 +1,4 @@
-from helium import hover, Config
+from helium import hover, Button, Config
 from helium._impl.util.lang import TemporaryAttrValue
 from helium._impl.util.system import is_windows
 from tests.api import BrowserAT
@@ -46,3 +46,13 @@ class HoverTest(BrowserAT):
 					"cursor was over the browser window and interfered with "
 					"the test?"
 				)
+	def test_hover_non_existent_str_error_message(self):
+		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
+			with self.assertRaises(LookupError) as cm:
+				hover("Non-existent")
+			self.assertEqual("'Non-existent'", str(cm.exception))
+	def test_hover_non_existent_button_error_message(self):
+		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
+			with self.assertRaises(LookupError) as cm:
+				hover(Button("Non-existent"))
+			self.assertEqual("Button('Non-existent')", str(cm.exception))
