@@ -223,8 +223,13 @@ class APIImpl:
 	@might_spawn_window
 	@handle_unexpected_alert
 	def _perform_mouse_action(self, element, action):
+		element_repr = repr(element)
 		element, offset = self._unwrap_clickable_element(element)
-		self._manipulate(element, lambda wew: action(wew.unwrap(), offset))
+		try:
+			self._manipulate(element, lambda wew: action(wew.unwrap(), offset))
+		except LookupError:
+			# Show a more helpful error message:
+			raise LookupError(element_repr) from None
 	def _unwrap_clickable_element(self, elt):
 		from helium import HTMLElement, Point
 		offset = None
