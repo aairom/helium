@@ -146,13 +146,19 @@ class APIImpl:
 	@might_spawn_window
 	@handle_unexpected_alert
 	def write_impl(self, text, into=None):
-		if into is not None:
+		unwrapped = into
+		if unwrapped is not None:
 			from helium import GUIElement
-			if isinstance(into, GUIElement):
-				into = into._impl
-		self._handle_alerts(
-			self._write_no_alert, self._write_with_alert, text, into=into
-		)
+			if isinstance(unwrapped, GUIElement):
+				unwrapped = unwrapped._impl
+		try:
+			self._handle_alerts(
+				self._write_no_alert, self._write_with_alert, text,
+				into=unwrapped
+			)
+		except LookupError:
+			# Give a more helpful error message:
+			raise LookupError(repr(into)) from None
 	def _write_no_alert(self, text, into=None):
 		if into:
 			if isinstance(into, str):

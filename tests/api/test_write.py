@@ -1,4 +1,5 @@
-from helium import write, TextField
+from helium import write, TextField, Config
+from helium._impl.util.lang import TemporaryAttrValue
 from tests.api import BrowserAT
 
 class WriteTest(BrowserAT):
@@ -27,3 +28,13 @@ class WriteTest(BrowserAT):
 		label = 'Input type=time'
 		write('1749', into=TextField(to_right_of=label))
 		self.assertEqual('17:49', TextField(label).value)
+	def test_write_into_non_existent_str_error_message(self):
+		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
+			with self.assertRaises(LookupError) as cm:
+				write('Hello', into='Non-existent')
+			self.assertEqual("'Non-existent'", str(cm.exception))
+	def test_write_into_non_existent_text_field_error_message(self):
+		with TemporaryAttrValue(Config, 'implicit_wait_secs', .1):
+			with self.assertRaises(LookupError) as cm:
+				write('Hello', into=TextField('Non-existent'))
+			self.assertEqual("TextField('Non-existent')", str(cm.exception))
