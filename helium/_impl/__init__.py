@@ -703,6 +703,7 @@ class GUIElementImpl:
 		return False
 
 class HTMLElementImpl(GUIElementImpl):
+	is_findable_when_hidden = False
 	def __init__(
 			self, driver, below=None, to_right_of=None, above=None,
 			to_left_of=None
@@ -761,7 +762,7 @@ class HTMLElementImpl(GUIElementImpl):
 	def _find_all_in_curr_frame(self):
 		search_regions = self._get_search_regions_in_curr_frame()
 		for occurrence in self.find_anywhere_in_curr_frame():
-			if not occurrence.is_displayed():
+			if not (self.is_findable_when_hidden or occurrence.is_displayed()):
 				continue
 			if self._is_in_any_search_region(occurrence, search_regions):
 				yield occurrence
@@ -1166,6 +1167,9 @@ class StandardTextFieldWithPlaceholder(HTMLElementIdentifiedByXPath):
 		)
 
 class FileInput(LabelledElement):
+	# Many pages have hidden file input elements. We in particular still want
+	# attach_file(...) to find them.
+	is_findable_when_hidden = True
 	def get_xpath(self):
 		return "//input[@type='file']"
 

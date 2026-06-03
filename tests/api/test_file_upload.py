@@ -1,4 +1,4 @@
-from helium import attach_file, drag_file, TextField, Text
+from helium import attach_file, drag_file, get_driver, TextField, Text
 from tests.api import BrowserAT
 from tests.api.util import get_data_file
 
@@ -23,6 +23,21 @@ class FileUploadTest(BrowserAT):
 			self.file_to_upload,
 			to=Text('Normal file upload').top_left + (200, 10)
 		)
+		self.assertEqual('Success!', self.read_result_from_browser())
+	def test_attach_file_to_hidden_file_upload(self):
+		file_input_elts = get_driver().execute_script(
+			"return document.querySelectorAll('input[type=file]');"
+		)
+		self.assertEqual(
+			1, len(file_input_elts),
+			"This test assumes that there is only one file input element."
+		)
+		file_input_elt = file_input_elts[0]
+		get_driver().execute_script(
+			"arguments[0].setAttribute('style', 'display: none;');",
+			file_input_elt
+		)
+		attach_file(self.file_to_upload)
 		self.assertEqual('Success!', self.read_result_from_browser())
 	def test_drag_file_to_appearing_drop_area(self):
 		drag_file(self.file_to_upload, to='Drop the file here!')
