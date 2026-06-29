@@ -5,11 +5,11 @@ For example:
 
 ![Helium Demo](docs/helium-demo.gif)
 
-Helium is being sponsored by
-[RapidProxy](https://www.rapidproxy.io/?ref=herrmann). Check them out if you
-need a proxy for your web automation tasks!
+Helium is being sponsored by [SX.org](https://sx.org/?c=R26NcI). Check them out
+if you need SOCKS5 proxies for Python browser automation, testing, and public
+web data workflows!
 
-[![RapidProxy logo](docs/sponsor-2.png)](https://www.rapidproxy.io/?ref=herrmann)
+[![SX.org logo](docs/sponsor-3.png)](https://sx.org/?c=R26NcI)
 
 ## Installation
 
