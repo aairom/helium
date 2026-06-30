@@ -5,9 +5,9 @@ For example:
 
 ![Helium Demo](docs/helium-demo.gif)
 
-Helium is being sponsored by [SX.org](https://sx.org/?c=R26NcI). Check them out
-if you need SOCKS5 proxies for Python browser automation, testing, and public
-web data workflows!
+Helium is being sponsored by [SX.org](https://sx.org/?c=R26NcI). They offer
+SOCKS5 proxies for Python browser automation and public web data workflows.
+Use promo code **helium3gb** to try them out for free.
 
 [![SX.org logo](docs/sponsor-3.png)](https://sx.org/?c=R26NcI)
 
